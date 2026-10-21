@@ -10,22 +10,28 @@
 <body class="bg-gray-100 font-sans antialiased">
 
     <!-- Navbar Sederhana -->
-    <nav class="bg-blue-600 text-white p-4 shadow-md flex justify-between items-center">
-        <h1 class="text-lg font-bold">Portal Santri Daarul Azmi</h1>
+    <header class="bg-blue-600 text-white p-4 shadow-md flex flex-wrap justify-between items-center gap-3">
+        <a href="./dashboard.html#beranda" class="text-lg font-bold text-white no-underline">Portal Santri Daarul Azmi</a>
         <button id="logout-btn" class="bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-sm transition">Keluar</button>
+    </header>
+    <nav aria-label="Navigasi dashboard" class="bg-slate-800 text-white px-4 py-3 shadow-md sticky top-0 z-10 flex gap-3 sm:gap-6 overflow-x-auto whitespace-nowrap">
+        <a href="./dashboard.html#beranda" class="text-white hover:text-blue-200">Beranda</a>
+        <a href="./dashboard.html#profil" class="text-white hover:text-blue-200">Profil Santri</a>
+        <a href="./admin.html" class="text-white hover:text-blue-200">Panel Admin</a>
+        <a href="https://daarulazmi.ponpes.id/" class="text-white hover:text-blue-200">Website Pondok</a>
     </nav>
 
     <!-- Konten Utama Dashboard -->
     <main class="max-w-4xl mx-auto p-6 mt-6">
 
         <!-- Kartu Sambutan -->
-        <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+        <div id="beranda" class="bg-white p-6 rounded-lg shadow-md mb-6 scroll-mt-24">
             <h2 class="text-2xl font-bold text-gray-800">Selamat Datang di Dashboard</h2>
             <p class="text-gray-600 mt-1">Kelola dan perbarui informasi profil santri Anda di bawah ini.</p>
         </div>
 
         <!-- Form Edit Profil Santri -->
-        <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+        <div id="profil" class="bg-white p-6 rounded-lg shadow-md mb-6 scroll-mt-24">
             <h3 class="text-xl font-bold mb-4 text-gray-800">Form Pengisian & Edit Profil Santri</h3>
 
             <form id="profile-form" class="space-y-4">

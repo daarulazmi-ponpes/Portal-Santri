@@ -1,4 +1,4 @@
-import { db, guard } from './common.js';
+import { db } from './common.js';
 
 const form = document.getElementById('profile-form');
 const nameInput = document.getElementById('full-name');
@@ -16,8 +16,18 @@ function setStatus(text, colorClass) {
 }
 
 async function loadDashboard() {
-  currentUser = await guard();
-  if (!currentUser) return;
+  const { data, error: sessionError } = await db.auth.getSession();
+
+  if (sessionError) {
+    throw sessionError;
+  }
+
+  if (!data.session?.user) {
+    window.location.replace('./index.html');
+    return;
+  }
+
+  currentUser = data.session.user;
 
   const { data: profile, error } = await db
     .from('profiles')
@@ -52,10 +62,11 @@ form.addEventListener('submit', async (event) => {
   setStatus('Menyimpan perubahan...', 'text-blue-600');
 
   try {
-    const { data: userData, error: userError } = await db.auth.getUser();
-    if (userError) throw userError;
-    if (!userData.user) {
-      throw new Error('Sesi login tidak ditemukan. Silakan masuk kembali.');
+    const { data, error: sessionError } = await db.auth.getSession();
+    if (sessionError) throw sessionError;
+    if (!data.session?.user || data.session.user.id !== currentUser.id) {
+      window.location.replace('./index.html');
+      return;
     }
 
     const { error } = await db
@@ -71,9 +82,7 @@ form.addEventListener('submit', async (event) => {
         { onConflict: 'id' }
       );
 
-    if (error) {
-      throw error;
-    }
+    if (error) throw error;
 
     setStatus('Profil berhasil diperbarui.', 'text-green-600');
   } catch (error) {
@@ -85,13 +94,15 @@ form.addEventListener('submit', async (event) => {
 });
 
 logoutButton.addEventListener('click', async () => {
-  const { error } = await db.auth.signOut();
-  if (error) {
+  logoutButton.disabled = true;
+  try {
+    const { error } = await db.auth.signOut();
+    if (error) throw error;
+    window.location.replace('./index.html');
+  } catch (error) {
     setStatus(`Gagal keluar: ${error.message}`, 'text-red-600');
-    return;
+    logoutButton.disabled = false;
   }
-
-  window.location.href = './index.html';
 });
 
 loadDashboard().catch((error) => {
