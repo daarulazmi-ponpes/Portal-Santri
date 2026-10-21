@@ -12,6 +12,22 @@ export async function guard() {
  const {data:{user},error}=await db.auth.getUser();
  if(error || !user){location.replace('./index.html');return null;} return user;
 }
-export async function isAdmin(){ const {data,error}=await db.rpc('is_portal_admin'); if(error) throw error; return data===true; }
+
+export async function isAdmin() {
+  if (!db || !configured) return false;
+
+  const { data, error } = await db.rpc('is_portal_admin');
+
+  if (error) {
+    console.warn(
+      'Pemeriksaan admin belum tersedia:',
+      error.message
+    );
+    return false;
+  }
+
+  return data === true;
+}
+
 export function bindLogout(){const b=$('logout'); if(b)b.onclick=async()=>{await db.auth.signOut();location.replace('./index.html');};}
 export function requireData(result){if(result.error)throw result.error;return result.data;}
