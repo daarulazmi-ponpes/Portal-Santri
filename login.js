@@ -1,0 +1,3 @@
+import {db,configured,$,message,isAdmin} from './common.js';
+if(configured){db.auth.getUser().then(async({data})=>{if(data.user)location.replace(await isAdmin()?'./admin.html':'./dashboard.html');}).catch(e=>message(e.message));}
+$('loginForm').onsubmit=async(e)=>{e.preventDefault();if(!configured){message('Supabase belum diatur di config.js');return;}const button=$('submit');button.disabled=true;try{const {error}=await db.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(error)throw error;location.replace(await isAdmin()?'./admin.html':'./dashboard.html');}catch(err){message('Gagal masuk: '+err.message);}finally{button.disabled=false;}};
