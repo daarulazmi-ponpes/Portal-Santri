@@ -1,49 +1,53 @@
-<!DOCTYPE html>
-<html lang="id" class="scroll-smooth">
+<!doctype html>
+<html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profil Santri - Portal Daarul Azmi</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Profil Santri | Daarul Azmi</title>
+  <link rel="stylesheet" href="./style.css">
 </head>
-<body class="bg-gray-100 font-sans antialiased">
-    <header class="bg-blue-600 text-white p-4 shadow-md flex flex-wrap justify-between items-center gap-3">
-        <a href="./dashboard.html?v=20261021-2" class="text-lg font-bold text-white no-underline">Portal Santri Daarul Azmi</a>
-        <button id="logout-btn" class="bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-sm transition">Keluar</button>
-    </header>
-    <nav aria-label="Navigasi dashboard" class="bg-slate-800 text-white px-4 py-3 shadow-md sticky top-0 z-10 flex gap-3 sm:gap-6 overflow-x-auto whitespace-nowrap">
-        <a href="./dashboard.html?v=20261021-2" class="text-white hover:text-blue-200">Beranda</a>
-        <a href="./profile.html?v=20261021-2" aria-current="page" class="text-white hover:text-blue-200">Profil Santri</a>
-        <a href="./admin.html?v=20261021-2" class="text-white hover:text-blue-200">Panel Admin</a>
-        <a href="https://daarulazmi.ponpes.id/" class="text-white hover:text-blue-200">Website Pondok</a>
-    </nav>
-    <main class="max-w-4xl mx-auto p-6 mt-6">
-        <section class="bg-white p-6 rounded-lg shadow-md">
-            <h1 class="text-xl font-bold mb-4 text-gray-800">Profil Santri</h1>
-            <form id="profile-form" class="space-y-4">
-                <div>
-                    <label for="full-name" class="block text-sm font-medium text-gray-700">Nama Lengkap</label>
-                    <input type="text" id="full-name" class="w-full mt-1 p-2 border rounded-md focus:ring focus:ring-blue-300" required placeholder="Masukkan nama lengkap santri" />
-                </div>
-                <div>
-                    <label for="nis" class="block text-sm font-medium text-gray-700">NIS (Nomor Induk Siswa)</label>
-                    <input type="text" id="nis" class="w-full mt-1 p-2 border rounded-md focus:ring focus:ring-blue-300" placeholder="Masukkan NIS" />
-                </div>
-                <div>
-                    <label for="phone" class="block text-sm font-medium text-gray-700">Nomor Telepon</label>
-                    <input type="text" id="phone" class="w-full mt-1 p-2 border rounded-md focus:ring focus:ring-blue-300" placeholder="Contoh: 08123456789" />
-                </div>
-                <div>
-                    <label for="address" class="block text-sm font-medium text-gray-700">Alamat</label>
-                    <textarea id="address" class="w-full mt-1 p-2 border rounded-md focus:ring focus:ring-blue-300" rows="3" placeholder="Masukkan alamat lengkap"></textarea>
-                </div>
-                <button type="submit" id="save-btn" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition">
-                    Simpan Profil
-                </button>
-            </form>
-            <p id="profile-status" class="mt-3 text-sm font-medium" role="status" aria-live="polite"></p>
-        </section>
-    </main>
-    <script type="module" src="./dashboard.js?v=20261021-2"></script>
+<body class="portal-page">
+  <header class="portal-header">
+    <a class="brand" href="./dashboard.html">DAARUL AZMI</a>
+    <button id="logout-btn" class="portal-logout" type="button">Keluar</button>
+  </header>
+  <nav class="portal-nav" aria-label="Navigasi portal">
+    <a href="./dashboard.html"><span aria-hidden="true">⌂</span> Beranda</a>
+    <a href="./dashboard.html#tagihan"><span aria-hidden="true">▤</span> Tagihan</a>
+    <a href="./dashboard.html#pembayaran"><span aria-hidden="true">◷</span> Histori Pembayaran</a>
+    <a href="./dashboard.html#tabungan"><span aria-hidden="true">＄</span> Tabungan</a>
+    <a href="./profile.html" aria-current="page"><span aria-hidden="true">●</span> Profil Santri</a>
+    <a href="https://daarulazmi.ponpes.id/"><span aria-hidden="true">◆</span> Website Pondok</a>
+  </nav>
+  <main class="portal-main">
+    <section class="portal-section profile-section">
+      <div class="portal-section-heading">
+        <div><p class="portal-eyebrow">AKUN SANTRI &amp; WALI SANTRI</p><h1>Profil Santri</h1></div>
+      </div>
+      <p class="profile-intro">Pastikan informasi santri selalu sesuai agar mudah dihubungi.</p>
+      <form id="profile-form" class="profile-form">
+        <div>
+          <label for="full-name">Nama Lengkap</label>
+          <input type="text" id="full-name" required placeholder="Masukkan nama lengkap santri">
+        </div>
+        <div>
+          <label for="nis">NIS (Nomor Induk Siswa)</label>
+          <input type="text" id="nis" placeholder="Masukkan NIS">
+        </div>
+        <div>
+          <label for="phone">Nomor Telepon</label>
+          <input type="tel" id="phone" placeholder="Contoh: 08123456789">
+        </div>
+        <div>
+          <label for="address">Alamat</label>
+          <textarea id="address" rows="3" placeholder="Masukkan alamat lengkap"></textarea>
+        </div>
+        <button type="submit" id="save-btn">Simpan Profil</button>
+      </form>
+      <p id="profile-status" class="portal-status" role="status" aria-live="polite"></p>
+    </section>
+    <footer class="portal-footer">Portal Santri Daarul Azmi</footer>
+  </main>
+  <script type="module" src="./dashboard.js"></script>
 </body>
 </html>

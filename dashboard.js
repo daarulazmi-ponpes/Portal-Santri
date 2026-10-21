@@ -12,9 +12,9 @@ const saveButton = document.getElementById('save-btn');
 const logoutButton = document.getElementById('logout-btn');
 let currentUser = null;
 
-function setStatus(text, colorClass) {
+function setStatus(text, state = '') {
   statusEl.textContent = text;
-  statusEl.className = `mt-3 text-sm font-medium ${colorClass}`;
+  statusEl.className = `portal-status ${state}`;
 }
 
 async function loadDashboard() {
@@ -52,7 +52,7 @@ async function loadDashboard() {
     addressInput.value = profile.address || '';
   } else {
     nameInput.value = currentUser.user_metadata?.full_name || '';
-    setStatus('Lengkapi profil Anda, lalu simpan.', 'text-blue-600');
+    setStatus('Lengkapi profil Anda, lalu simpan.');
   }
 }
 
@@ -60,12 +60,12 @@ form?.addEventListener('submit', async (event) => {
   event.preventDefault();
 
   if (!db || !currentUser) {
-    setStatus('Sesi login tidak ditemukan. Silakan masuk kembali.', 'text-red-600');
+    setStatus('Sesi login tidak ditemukan. Silakan masuk kembali.', 'is-error');
     return;
   }
 
   saveButton.disabled = true;
-  setStatus('Menyimpan perubahan...', 'text-blue-600');
+  setStatus('Menyimpan perubahan...');
 
   try {
     const { data, error: sessionError } = await db.auth.getSession();
@@ -90,10 +90,10 @@ form?.addEventListener('submit', async (event) => {
 
     if (error) throw error;
 
-    setStatus('Profil berhasil diperbarui.', 'text-green-600');
+    setStatus('Profil berhasil diperbarui.', 'is-success');
   } catch (error) {
     console.error('Gagal menyimpan profil:', error);
-    setStatus(`Gagal menyimpan profil: ${error.message}`, 'text-red-600');
+    setStatus(`Gagal menyimpan profil: ${error.message}`, 'is-error');
   } finally {
     saveButton.disabled = false;
   }
@@ -106,12 +106,12 @@ logoutButton.addEventListener('click', async () => {
     if (error) throw error;
     window.location.replace('./index.html');
   } catch (error) {
-    setStatus(`Gagal keluar: ${error.message}`, 'text-red-600');
+    setStatus(`Gagal keluar: ${error.message}`, 'is-error');
     logoutButton.disabled = false;
   }
 });
 
 loadDashboard().catch((error) => {
   console.error('Gagal memuat dashboard:', error);
-  setStatus(`Gagal memuat profil: ${error.message}`, 'text-red-600');
+  setStatus(`Gagal memuat profil: ${error.message}`, 'is-error');
 });

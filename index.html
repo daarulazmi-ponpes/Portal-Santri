@@ -9,21 +9,15 @@
 </head>
 
 <body class="login-page">
-
-  <main class="card login-card">
-
-    <!-- LOGO PONDOK -->
+  <main class="login-card">
     <div class="logo-pondok">
       <img
         src="./assets/logo-daarulazmi.png"
         alt="Logo Pondok Pesantren Daarul Azmi">
     </div>
-
-    <h1 style="margin-top:20px">DAARUL AZMI</h1>
-    <p class="muted">Portal Santri Daarul Azmi</p>
-
+    <h1>DAARUL AZMI</h1>
+    <p class="login-subtitle">Masuk ke Portal Santri &amp; Wali Santri</p>
     <form id="loginForm">
-
       <div id="nameField" hidden>
         <label for="fullName">Nama lengkap</label>
         <input
@@ -33,59 +27,26 @@
           maxlength="120"
           placeholder="Nama santri">
       </div>
-
-      <label for="email">Email akun santri</label>
-      <input
-        type="email"
-        id="email"
-        autocomplete="username"
-        required
-        placeholder="akun@contoh.sch.id">
-
+      <label for="email">Email akun santri atau wali</label>
+      <input type="email" id="email" autocomplete="username" required placeholder="Email terdaftar">
       <label for="password">Password</label>
-      <input
-        id="password"
-        type="password"
-        autocomplete="current-password"
-        required
-        minlength="6"
-        placeholder="Password">
-
+      <input id="password" type="password" autocomplete="current-password" required minlength="6" placeholder="Password">
       <div id="confirmPasswordField" hidden>
         <label for="confirmPassword">Ulangi password</label>
-        <input
-          id="confirmPassword"
-          type="password"
-          autocomplete="new-password"
-          minlength="6"
-          placeholder="Ulangi password">
+        <input id="confirmPassword" type="password" autocomplete="new-password" minlength="6" placeholder="Ulangi password">
       </div>
-
       <p id="message" class="message" role="alert"></p>
-
-      <button
-        style="width:100%;margin-top:12px"
-        id="submit">
-        Masuk
-      </button>
-
+      <div class="login-actions">
+        <a class="login-back" href="https://daarulazmi.ponpes.id/">‹ Kembali ke Website Pondok</a>
+        <button id="submit" type="submit">Masuk <span aria-hidden="true">↪</span></button>
+      </div>
     </form>
-
-    <p class="muted" style="font-size:14px">
+    <p class="login-mode">
       <span id="modePrompt">Belum punya akun?</span>
       <button id="toggleMode" type="button" class="text-button">Daftar</button>
     </p>
-    <p class="muted" style="font-size:12px">
-      Admin masuk dengan akun yang sudah diberi akses oleh pengelola.
-    </p>
-
-    <a href="https://daarulazmi.ponpes.id/">
-      ← Kembali ke website utama
-    </a>
-
+    <p class="login-help">Gunakan akun yang telah didaftarkan untuk santri atau wali santri.</p>
   </main>
-
   <script type="module" src="./login.js"></script>
-
 </body>
 </html>

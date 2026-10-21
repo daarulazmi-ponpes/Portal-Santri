@@ -1,36 +1,94 @@
-<!DOCTYPE html>
-<html lang="id" class="scroll-smooth">
+<!doctype html>
+<html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Santri - Portal Daarul Azmi</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Beranda Santri | Daarul Azmi</title>
+  <link rel="stylesheet" href="./style.css">
 </head>
-<body class="bg-gray-100 font-sans antialiased">
+<body class="portal-page">
+  <header class="portal-header">
+    <a class="brand" href="./dashboard.html">DAARUL AZMI</a>
+    <button id="logout-btn" class="portal-logout" type="button">Keluar</button>
+  </header>
+  <nav class="portal-nav" aria-label="Navigasi portal">
+    <a href="#beranda" aria-current="page"><span aria-hidden="true">⌂</span> Beranda</a>
+    <a href="#tagihan"><span aria-hidden="true">▤</span> Tagihan</a>
+    <a href="#pembayaran"><span aria-hidden="true">◷</span> Histori Pembayaran</a>
+    <a href="#tabungan"><span aria-hidden="true">＄</span> Tabungan</a>
+    <a href="./profile.html"><span aria-hidden="true">●</span> Profil Santri</a>
+    <a href="https://daarulazmi.ponpes.id/"><span aria-hidden="true">◆</span> Website Pondok</a>
+  </nav>
 
-    <!-- Navbar Sederhana -->
-    <header class="bg-blue-600 text-white p-4 shadow-md flex flex-wrap justify-between items-center gap-3">
-        <a href="#beranda" class="text-lg font-bold text-white no-underline">Portal Santri Daarul Azmi</a>
-        <button id="logout-btn" class="bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-sm transition">Keluar</button>
-    </header>
-    <nav aria-label="Navigasi dashboard" class="bg-slate-800 text-white px-4 py-3 shadow-md sticky top-0 z-10 flex gap-3 sm:gap-6 overflow-x-auto whitespace-nowrap">
-        <a href="#beranda" class="text-white hover:text-blue-200">Beranda</a>
-        <a href="./profile.html?v=20261021-2" class="text-white hover:text-blue-200">Profil Santri</a>
-        <a href="./admin.html?v=20261021-2" class="text-white hover:text-blue-200">Panel Admin</a>
-        <a href="https://daarulazmi.ponpes.id/" class="text-white hover:text-blue-200">Website Pondok</a>
-    </nav>
+  <main class="portal-main">
+    <section id="beranda" class="portal-welcome">
+      <p class="portal-eyebrow">PORTAL SANTRI &amp; WALI SANTRI</p>
+      <h1>Assalamu'alaikum, <span id="student-name">Santri</span></h1>
+      <p class="portal-intro">Pantau informasi santri, tagihan, pembayaran, dan tabungan dalam satu tempat.</p>
+      <p id="dashboard-status" class="portal-status" role="status" aria-live="polite"></p>
+      <div class="student-meta">
+        <span id="student-nis">NIS: —</span>
+        <span id="student-class">Kelas: —</span>
+        <span id="student-room">Kamar: —</span>
+      </div>
+    </section>
 
-    <!-- Konten Utama Dashboard -->
-    <main class="max-w-4xl mx-auto p-6 mt-6">
-        <!-- Kartu Sambutan -->
-        <div id="beranda" class="bg-white p-6 rounded-lg shadow-md mb-6">
-            <h2 class="text-2xl font-bold text-gray-800">Selamat Datang di Dashboard</h2>
-            <p class="text-gray-600 mt-1">Pilih menu Profil Santri untuk mengelola informasi profil Anda.</p>
-            <p id="dashboard-status" class="mt-3 text-sm font-medium" role="status" aria-live="polite"></p>
-        </div>
-    </main>
+    <section class="portal-summary" aria-label="Ringkasan akun">
+      <article class="portal-stat">
+        <span class="portal-stat-icon" aria-hidden="true">▤</span>
+        <div><p>Sisa Tagihan</p><strong id="outstanding-total">—</strong></div>
+        <a href="#tagihan">Lihat tagihan</a>
+      </article>
+      <article class="portal-stat">
+        <span class="portal-stat-icon" aria-hidden="true">◷</span>
+        <div><p>Total Pembayaran</p><strong id="payment-total">—</strong></div>
+        <a href="#pembayaran">Riwayat pembayaran</a>
+      </article>
+      <article class="portal-stat">
+        <span class="portal-stat-icon" aria-hidden="true">＄</span>
+        <div><p>Saldo Tabungan</p><strong id="savings-total">—</strong></div>
+        <a href="#tabungan">Riwayat tabungan</a>
+      </article>
+    </section>
 
-    <script type="module" src="./dashboard.js?v=20261021-2"></script>
+    <section id="tagihan" class="portal-section">
+      <div class="portal-section-heading">
+        <div><p class="portal-eyebrow">INFORMASI KEUANGAN</p><h2>Tagihan Santri</h2></div>
+      </div>
+      <div class="portal-table-wrap">
+        <table>
+          <thead><tr><th>Keterangan</th><th>Jatuh Tempo</th><th>Total</th><th>Terbayar</th><th>Sisa</th></tr></thead>
+          <tbody id="invoice-list"><tr><td colspan="5">Memuat tagihan...</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="pembayaran" class="portal-section">
+      <div class="portal-section-heading">
+        <div><p class="portal-eyebrow">RIWAYAT TRANSAKSI</p><h2>Histori Pembayaran</h2></div>
+      </div>
+      <div class="portal-table-wrap">
+        <table>
+          <thead><tr><th>Tanggal</th><th>Keterangan</th><th>Catatan</th><th>Nominal</th></tr></thead>
+          <tbody id="payment-list"><tr><td colspan="4">Memuat pembayaran...</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="tabungan" class="portal-section">
+      <div class="portal-section-heading">
+        <div><p class="portal-eyebrow">CATATAN TABUNGAN</p><h2>Riwayat Tabungan</h2></div>
+      </div>
+      <div class="portal-table-wrap">
+        <table>
+          <thead><tr><th>Tanggal</th><th>Keterangan</th><th>Jenis</th><th>Nominal</th></tr></thead>
+          <tbody id="savings-list"><tr><td colspan="4">Memuat tabungan...</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer class="portal-footer">Portal Santri Daarul Azmi</footer>
+  </main>
+  <script type="module" src="./portal.js"></script>
 </body>
 </html>
