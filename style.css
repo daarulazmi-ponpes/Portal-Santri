@@ -192,6 +192,13 @@ button:disabled {
   cursor: not-allowed;
 }
 
+.text-button {
+  padding: 0;
+  background: transparent;
+  color: var(--blue);
+  text-decoration: underline;
+}
+
 .secondary {
   background: #eeeff3;
   color: #22324a;

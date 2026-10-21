@@ -24,6 +24,16 @@
 
     <form id="loginForm">
 
+      <div id="nameField" hidden>
+        <label for="fullName">Nama lengkap</label>
+        <input
+          type="text"
+          id="fullName"
+          autocomplete="name"
+          maxlength="120"
+          placeholder="Nama santri">
+      </div>
+
       <label for="email">Email akun santri</label>
       <input
         type="email"
@@ -41,6 +51,16 @@
         minlength="6"
         placeholder="Password">
 
+      <div id="confirmPasswordField" hidden>
+        <label for="confirmPassword">Ulangi password</label>
+        <input
+          id="confirmPassword"
+          type="password"
+          autocomplete="new-password"
+          minlength="6"
+          placeholder="Ulangi password">
+      </div>
+
       <p id="message" class="message" role="alert"></p>
 
       <button
@@ -51,8 +71,12 @@
 
     </form>
 
+    <p class="muted" style="font-size:14px">
+      <span id="modePrompt">Belum punya akun?</span>
+      <button id="toggleMode" type="button" class="text-button">Daftar</button>
+    </p>
     <p class="muted" style="font-size:12px">
-      Akun diberikan oleh pengelola pondok.
+      Admin masuk dengan akun yang sudah diberi akses oleh pengelola.
     </p>
 
     <a href="https://daarulazmi.ponpes.id/">

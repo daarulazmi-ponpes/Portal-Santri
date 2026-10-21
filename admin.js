@@ -1,5 +1,6 @@
-import {db,$,guard,bindLogout,requireData,isAdmin,money,safe,message} from './common.js';
+import {db,$,guard,bindLogout,bindSectionNavigation,requireData,isAdmin,money,safe,message} from './common.js';
 let students=[],classes=[],rooms=[],invoices=[],payments=[];
+bindSectionNavigation();
 const options=(items,label,empty='Pilih...')=>'<option value="">'+safe(empty)+'</option>'+items.map(x=>`<option value="${safe(x.id)}">${safe(label(x))}</option>`).join('');
 function formAction(id,run){$(id).onsubmit=async e=>{e.preventDefault();const button=e.currentTarget.querySelector('button');button.disabled=true;try{await run();message('Data berhasil disimpan.','success');await load();}catch(err){message(err.message);}finally{button.disabled=false;}};}
 async function load(){

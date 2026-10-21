@@ -84,6 +84,26 @@ export function safe(t) {
   );
 }
 
+export function bindSectionNavigation() {
+  document.querySelectorAll('nav a[href^="#"]').forEach((link) => {
+    link.addEventListener('click', (event) => {
+      const targetId = decodeURIComponent(link.hash.slice(1));
+      const target = document.getElementById(targetId);
+
+      if (!target) {
+        return;
+      }
+
+      event.preventDefault();
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      if (window.location.hash !== link.hash) {
+        window.history.pushState(null, '', link.hash);
+      }
+    });
+  });
+}
+
 // ========================================
 // PEMERIKSAAN LOGIN
 // ========================================
@@ -101,7 +121,11 @@ export async function guard() {
     error
   } = await db.auth.getUser();
 
-  if (error || !user) {
+  if (error) {
+    throw error;
+  }
+
+  if (!user) {
     window.location.replace('./index.html');
     return null;
   }
@@ -109,18 +133,22 @@ export async function guard() {
   return user;
 }
 
-// ========================================
-// PEMERIKSAAN ADMIN SEMENTARA
-// ========================================
-
-// Sementara tidak memanggil RPC is_portal_admin
-// agar dashboard santri tidak berhenti karena
-// fungsi tersebut belum tersedia di Supabase.
-//
-// Ini BUKAN pemeriksaan hak akses admin permanen.
-
 export async function isAdmin() {
-  return false;
+  if (!db) {
+    throw new Error('Supabase belum dikonfigurasi.');
+  }
+
+  const { data, error } = await db.rpc('is_portal_admin');
+
+  if (error) {
+    if (error.code === 'PGRST202' || error.code === '42883') {
+      console.warn('Admin role check unavailable; treating user as a student.', error);
+      return false;
+    }
+    throw error;
+  }
+
+  return data === true;
 }
 
 // ========================================

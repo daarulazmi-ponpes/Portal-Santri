@@ -1,45 +1,51 @@
 
-import { createClient } from
-  "https://esm.sh/@supabase/supabase-js@2";
-
-import {
-  SUPABASE_URL,
-  SUPABASE_ANON_KEY
-} from "./config.js";
+import { db } from "./common.js";
 
 const message = document.getElementById("message");
 const form = document.getElementById("loginForm");
 const submitButton = document.getElementById("submit");
+const nameField = document.getElementById("nameField");
+const fullNameInput = document.getElementById("fullName");
+const confirmPasswordField = document.getElementById("confirmPasswordField");
+const confirmPasswordInput = document.getElementById("confirmPassword");
+const toggleModeButton = document.getElementById("toggleMode");
+const modePrompt = document.getElementById("modePrompt");
 
-const supabaseUrl = SUPABASE_URL.trim().replace(/\/+$/, "");
-const supabaseKey = SUPABASE_ANON_KEY.trim();
-
-let supabase = null;
+let mode = "login";
 
 function showMessage(text, success = false) {
   message.textContent = text;
   message.classList.toggle("success", success);
 }
 
-try {
-  if (
-    !supabaseUrl.startsWith("https://") ||
-    !supabaseUrl.endsWith(".supabase.co") ||
-    !supabaseKey ||
-    supabaseKey.includes("TEMPELKAN_")
-  ) {
-    throw new Error("Konfigurasi Supabase belum benar.");
-  }
+function setMode(nextMode) {
+  mode = nextMode;
+  const isSignup = mode === "signup";
 
-  supabase = createClient(supabaseUrl, supabaseKey);
-} catch (error) {
-  showMessage(error.message);
+  nameField.hidden = !isSignup;
+  fullNameInput.required = isSignup;
+  confirmPasswordField.hidden = !isSignup;
+  confirmPasswordInput.required = isSignup;
+  document.getElementById("password").autocomplete = isSignup
+    ? "new-password"
+    : "current-password";
+  submitButton.textContent = isSignup ? "Daftar" : "Masuk";
+  toggleModeButton.textContent = isSignup ? "Masuk" : "Daftar";
+  modePrompt.textContent = isSignup
+    ? "Sudah punya akun?"
+    : "Belum punya akun?";
+  message.textContent = "";
+  message.classList.remove("success");
 }
+
+toggleModeButton.addEventListener("click", () => {
+  setMode(mode === "login" ? "signup" : "login");
+});
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
 
-  if (!supabase) {
+  if (!db) {
     showMessage(
       "Konfigurasi Supabase belum benar. Periksa config.js."
     );
@@ -48,13 +54,52 @@ form.addEventListener("submit", async (event) => {
 
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value;
+  const fullName = fullNameInput.value.trim();
+
+  if (mode === "signup" && !fullName) {
+    showMessage("Nama lengkap wajib diisi.");
+    return;
+  }
+
+  if (mode === "signup" && password !== confirmPasswordInput.value) {
+    showMessage("Konfirmasi password tidak sama.");
+    return;
+  }
 
   submitButton.disabled = true;
-  submitButton.textContent = "Memeriksa akun...";
+  submitButton.textContent = mode === "signup"
+    ? "Mendaftarkan akun..."
+    : "Memeriksa akun...";
   showMessage("");
 
   try {
-    const { data, error } = await supabase.auth.signInWithPassword({
+    if (mode === "signup") {
+      const { data, error } = await db.auth.signUp({
+        email,
+        password,
+        options: {
+          data: { full_name: fullName }
+        }
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      if (data.session) {
+        window.location.href = "./dashboard.html";
+        return;
+      }
+
+      showMessage(
+        "Pendaftaran berhasil. Periksa email untuk mengonfirmasi akun sebelum masuk.",
+        true
+      );
+      form.reset();
+      return;
+    }
+
+    const { data, error } = await db.auth.signInWithPassword({
       email,
       password
     });
@@ -67,7 +112,19 @@ form.addEventListener("submit", async (event) => {
       throw new Error("Sesi login tidak berhasil dibuat.");
     }
 
-    window.location.href = "./dashboard.html";
+    const { data: isAdmin, error: roleError } = await db.rpc(
+      "is_portal_admin"
+    );
+
+    if (roleError) {
+      console.warn("Admin role check unavailable; continuing to student dashboard.", roleError);
+      window.location.href = "./dashboard.html";
+      return;
+    }
+
+    window.location.href = isAdmin
+      ? "./admin.html"
+      : "./dashboard.html";
   } catch (error) {
     console.error("Login error:", error);
 
@@ -76,6 +133,6 @@ form.addEventListener("submit", async (event) => {
     );
   } finally {
     submitButton.disabled = false;
-    submitButton.textContent = "Masuk";
+    submitButton.textContent = mode === "signup" ? "Daftar" : "Masuk";
   }
 });

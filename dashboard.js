@@ -1,3 +1,100 @@
-import {db,$,guard,bindLogout,requireData,money,date,safe,message,isAdmin} from './common.js';
-const rows=(id,items,renderer,count)=>{$(id).innerHTML=items.length?items.map(renderer).join(''):`<tr><td colspan="${count}" class="muted">Belum ada data.</td></tr>`;};
-(async()=>{try{const user=await guard();if(!user)return;bindLogout();if(await isAdmin()){$('welcome').textContent='Anda adalah admin. ';const a=document.createElement('a');a.href='./admin.html';a.textContent='Buka panel admin';$('welcome').append(a);}const p=requireData(await db.from('profiles').select('*,classes(name),rooms(name)').eq('id',user.id).single());const [inv,pays,sav]=await Promise.all([db.from('invoices').select('id,description,amount,due_date').eq('student_id',user.id).order('due_date',{ascending:false}),db.from('payments').select('id,invoice_id,amount,paid_at,note,invoices!inner(student_id,description)').eq('invoices.student_id',user.id).order('paid_at',{ascending:false}),db.from('savings_transactions').select('amount,note,transacted_at').eq('student_id',user.id).order('transacted_at',{ascending:false})]);const invoices=requireData(inv),payments=requireData(pays),savings=requireData(sav);$('welcome').textContent='Assalamu’alaikum, '+(p.full_name||user.email);const detail=[['NIS',p.nis],['Nama',p.full_name],['Kelas',p.classes?.name],['Kamar',p.rooms?.name],['Nama Wali',p.guardian_name],['Telepon',p.phone],['Alamat',p.address]];$('profileDetails').innerHTML=detail.map(([k,v])=>`<dt>${safe(k)}</dt><dd>${safe(v||'—')}</dd>`).join('');const paid=new Map();for(const x of payments)paid.set(x.invoice_id,(paid.get(x.invoice_id)||0)+Number(x.amount));const nominal=invoices.reduce((s,x)=>s+Number(x.amount),0),totalPaid=payments.reduce((s,x)=>s+Number(x.amount),0);$('totalTagihan').textContent=money(nominal);$('sisaTagihan').textContent=money(nominal-totalPaid);$('saldoTabungan').textContent=money(savings.reduce((s,x)=>s+Number(x.amount),0));rows('invoiceRows',invoices,x=>`<tr><td>${safe(x.description)}</td><td>${date(x.due_date)}</td><td>${money(x.amount)}</td><td>${money(paid.get(x.id)||0)}</td><td>${money(Number(x.amount)-(paid.get(x.id)||0))}</td></tr>`,5);rows('paymentRows',payments,x=>`<tr><td>${date(x.paid_at)}</td><td>${safe(x.invoices?.description)}</td><td>${money(x.amount)}</td><td>${safe(x.note)}</td></tr>`,4);rows('savingRows',savings,x=>`<tr><td>${date(x.transacted_at)}</td><td>${safe(x.note)}</td><td>${money(x.amount)}</td></tr>`,3);}catch(e){message('Gagal memuat dashboard: '+e.message);}})();
+import { db, guard } from './common.js';
+
+const form = document.getElementById('profile-form');
+const nameInput = document.getElementById('full-name');
+const nisInput = document.getElementById('nis');
+const phoneInput = document.getElementById('phone');
+const addressInput = document.getElementById('address');
+const statusEl = document.getElementById('profile-status');
+const saveButton = document.getElementById('save-btn');
+const logoutButton = document.getElementById('logout-btn');
+let currentUser = null;
+
+function setStatus(text, colorClass) {
+  statusEl.textContent = text;
+  statusEl.className = `mt-3 text-sm font-medium ${colorClass}`;
+}
+
+async function loadDashboard() {
+  currentUser = await guard();
+  if (!currentUser) return;
+
+  const { data: profile, error } = await db
+    .from('profiles')
+    .select('full_name,nis,phone,address')
+    .eq('id', currentUser.id)
+    .maybeSingle();
+
+  if (error) {
+    throw error;
+  }
+
+  if (profile) {
+    nameInput.value = profile.full_name || '';
+    nisInput.value = profile.nis || '';
+    phoneInput.value = profile.phone || '';
+    addressInput.value = profile.address || '';
+  } else {
+    nameInput.value = currentUser.user_metadata?.full_name || '';
+    setStatus('Lengkapi profil Anda, lalu simpan.', 'text-blue-600');
+  }
+}
+
+form.addEventListener('submit', async (event) => {
+  event.preventDefault();
+
+  if (!db || !currentUser) {
+    setStatus('Sesi login tidak ditemukan. Silakan masuk kembali.', 'text-red-600');
+    return;
+  }
+
+  saveButton.disabled = true;
+  setStatus('Menyimpan perubahan...', 'text-blue-600');
+
+  try {
+    const { data: userData, error: userError } = await db.auth.getUser();
+    if (userError) throw userError;
+    if (!userData.user) {
+      throw new Error('Sesi login tidak ditemukan. Silakan masuk kembali.');
+    }
+
+    const { error } = await db
+      .from('profiles')
+      .upsert(
+        {
+          id: currentUser.id,
+          full_name: nameInput.value.trim(),
+          nis: nisInput.value.trim() || null,
+          phone: phoneInput.value.trim() || null,
+          address: addressInput.value.trim() || null
+        },
+        { onConflict: 'id' }
+      );
+
+    if (error) {
+      throw error;
+    }
+
+    setStatus('Profil berhasil diperbarui.', 'text-green-600');
+  } catch (error) {
+    console.error('Gagal menyimpan profil:', error);
+    setStatus(`Gagal menyimpan profil: ${error.message}`, 'text-red-600');
+  } finally {
+    saveButton.disabled = false;
+  }
+});
+
+logoutButton.addEventListener('click', async () => {
+  const { error } = await db.auth.signOut();
+  if (error) {
+    setStatus(`Gagal keluar: ${error.message}`, 'text-red-600');
+    return;
+  }
+
+  window.location.href = './index.html';
+});
+
+loadDashboard().catch((error) => {
+  console.error('Gagal memuat dashboard:', error);
+  setStatus(`Gagal memuat profil: ${error.message}`, 'text-red-600');
+});
