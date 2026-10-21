@@ -20,7 +20,7 @@ async function load(){
  fillProfile();
 }
 function fillProfile(){const p=students.find(x=>x.id===$('profileStudent').value);for(const [id,key] of [['nis','nis'],['fullName','full_name'],['guardian','guardian_name'],['phone','phone'],['address','address'],['studentClass','class_id'],['studentRoom','room_id']])$(id).value=p?.[key]||'';}
-(async()=>{try{const user=await guard();if(!user)return;if(!await isAdmin()){location.replace('./dashboard.html');return;}bindLogout();$('profileStudent').onchange=fillProfile;$('paidAt').valueAsDate=new Date();$('savingDate').valueAsDate=new Date();await load();
+(async()=>{try{const user=await guard();if(!user)return;bindLogout();if(!await isAdmin()){message('Akun ini belum memiliki akses administrator. Minta pengelola Supabase memberi akses melalui public.portal_admins sesuai panduan.');return;}$('admin-tools').hidden=false;$('profileStudent').onchange=fillProfile;$('paidAt').valueAsDate=new Date();$('savingDate').valueAsDate=new Date();await load();
  formAction('classForm',async()=>{requireData(await db.from('classes').insert({name:$('className').value.trim()}));$('className').value='';});
  formAction('roomForm',async()=>{requireData(await db.from('rooms').insert({name:$('roomName').value.trim()}));$('roomName').value='';});
  formAction('profileForm',async()=>{const id=$('profileStudent').value;if(!id)throw Error('Pilih akun.');requireData(await db.from('profiles').update({nis:$('nis').value.trim()||null,full_name:$('fullName').value.trim(),guardian_name:$('guardian').value.trim()||null,phone:$('phone').value.trim()||null,address:$('address').value.trim()||null,class_id:$('studentClass').value||null,room_id:$('studentRoom').value||null}).eq('id',id));});

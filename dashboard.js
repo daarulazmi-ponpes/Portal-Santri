@@ -5,7 +5,9 @@ const nameInput = document.getElementById('full-name');
 const nisInput = document.getElementById('nis');
 const phoneInput = document.getElementById('phone');
 const addressInput = document.getElementById('address');
-const statusEl = document.getElementById('profile-status');
+const statusEl =
+  document.getElementById('profile-status') ||
+  document.getElementById('dashboard-status');
 const saveButton = document.getElementById('save-btn');
 const logoutButton = document.getElementById('logout-btn');
 let currentUser = null;
@@ -29,6 +31,10 @@ async function loadDashboard() {
 
   currentUser = data.session.user;
 
+  if (!form) {
+    return;
+  }
+
   const { data: profile, error } = await db
     .from('profiles')
     .select('full_name,nis,phone,address')
@@ -50,7 +56,7 @@ async function loadDashboard() {
   }
 }
 
-form.addEventListener('submit', async (event) => {
+form?.addEventListener('submit', async (event) => {
   event.preventDefault();
 
   if (!db || !currentUser) {
